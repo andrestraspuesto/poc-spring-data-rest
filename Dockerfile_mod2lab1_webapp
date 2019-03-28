@@ -1,0 +1,14 @@
+FROM microsoft/dotnet:2.2-sdk AS build-env
+ARG buildconfig
+RUN apt-get update && \
+        apt-get install -y --no-install-recommends apt-utils && \
+        apt-get install curl unzip procps -y && \
+        curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg/vsdbg
+
+WORKDIR /app
+COPY Mod2Lab1.csproj .
+RUN dotnet restore
+COPY . .
+RUN dotnet publish -o /publish -c Debug
+WORKDIR /publish
+ENTRYPOINT [ "dotnet","Mod2Lab1.dll" ]
